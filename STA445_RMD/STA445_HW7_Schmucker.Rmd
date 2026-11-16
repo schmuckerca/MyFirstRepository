@@ -1,0 +1,92 @@
+---
+title: "AS IS - submit anything for credit - STA445_HW7_Schmucker"
+author: "Claire Schmucker"
+date: "2026-11-06"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(cowplot)
+library(broom)
+```
+
+### Exercise 2 
+
+Using the `datasets::trees` data, complete the following. This question refreshes create a linear model, graphing the linear model, and introduces using some LaTeX expressions on the graph.
+
+**a)** Create a regression model for $y=$ `Volume` as a function of $x=$ `Height`.
+
+```{r}
+data(trees)
+model <- lm(Volume ~ Height, data = trees)
+model
+```
+**b)** Display the `summary` of the  model to view the y-intercept and slope of the regression line.
+
+```{r}
+summary(model)
+```
+
+**c)** Using `ggplot2`, create a scatter plot of Volume vs Height. 
+
+```{r}
+ggplot(trees, aes(x=Height, y=Volume)) +
+  geom_point()
+```
+
+
+**d)** Color the scatter using the `Girth` variable.
+
+```{r}
+ggplot(trees, aes(x=Height, y=Volume, color = Girth)) +
+  geom_point()
+```
+
+**e)** Modify the color scheme using a RColorBrewer palette.
+
+```{r}
+graph <- ggplot(trees, aes(x=Height, y=Volume, color = Girth)) +
+  geom_point() 
+  
+  
+plot_grid( graph + scale_color_viridis_c(option = "inferno"))
+
+#for Brewer, install Brewer package and do "scale_color_continous(pallete = "______")
+```
+
+
+**f)** Create a nice white filled rectangle to add text information. The following might be useful.
+
+```{r, eval=TRUE}
+graph + annotate('rect', xmin=65, xmax=75, ymin=60, ymax=74,
+         fill='white', color='black') 
+```
+
+**g)** Use the `broom` package to extract the coefficients of the best-fit line. Add this information as an annotation to the graph, which should follow a form that looks like $\hat{y}_i = (INTERCEPT) + (SLOPE)* x_i$. Place the annotation within the white text box.
+
+```{r}
+#graph + annotate('rect', xmin=65, xmax=75, ymin=60, ymax=74,
+        # fill='white', color='black') +
+ #annotate(y = intercept + slope * x, x = 66, y = 62)
+
+  
+#broom::tidy(model)
+
+
+```
+
+**h)** Use the `broom` package to extract the coefficient of determination $r^2$ from the model. Add the annotation to your graph, which should look something like $R^2 = (VALUE)$
+
+```{r}
+broom::glance(model)
+```
+
+**i)** Add the regression line in red. There are several ways to do this.
+
+**j)** Properly label the axes of the graph.
+
+
+
+**k)** Add a descriptive title to the graph.

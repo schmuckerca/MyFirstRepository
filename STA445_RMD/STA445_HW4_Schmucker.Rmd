@@ -1,0 +1,215 @@
+---
+title: "STA445_HW4_Schmucker"
+author: "Claire Schmucker"
+date: "2026-10-21"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyverse)
+```
+
+## Exercises 
+
+### Exercise 1
+
+For the following regular expression, explain in words what it matches on. Then add test strings to demonstrate that it in fact does match on the pattern you claim it does. Make sure that your test set of strings has several examples that match as well as several that do not. Show at least two examples that return TRUE and two examples that return FALSE. *If you copy the Rmarkdown code for these exercises directly from my source pages, make sure to remove the `eval=FALSE` from the R-chunk headers.*
+
+Here is an example of what a solution might look like.
+
+**q)** This regular expression matches: 
+
+Any string that contains the lower-case letter "a".
+
+```{r, eval=TRUE}
+strings <- c('Adel', 'Mathematics', 'able', 'cheese')
+data.frame( string = strings ) %>%
+  mutate( result = str_detect(string, 'a') )
+```
+
+Please complete the questions below.
+
+**a)** This regular expression matches:  
+
+Any string that contains the lowercase "ab". 
+
+```{r, eval=TRUE}
+strings <- c('Abel', 'Moab', 'crab', 'basin' )
+data.frame( string = strings ) %>%
+  mutate( result = str_detect(string, 'ab') )
+```
+
+I chose four words and the results that are true are the outputs for the words 
+that have the combination 'ab' in their word. 'ab' indicates that the string must
+have those letters exactly. 
+
+**b)** This regular expression matches:  
+
+Any string that contains lowercase "a" or lowercase "b." 
+
+```{r, eval=TRUE}
+strings <- c('Adam', 'butterfly', 'water', 'silk', 'Aspen')
+data.frame( string = strings ) %>%
+  mutate( result = str_detect(string, '[ab]') )
+```
+The results here are true, if the words contain lowercase "a" or "b". The square brackets indicate the "or". 
+
+**c)** This regular expression matches:  
+
+A string that contains a lowercase "a" or "b" at the beginning of the string
+
+```{r, eval=TRUE}
+strings <- c('Tomorrow', 'chase', 'acer', 'basket')
+data.frame( string = strings ) %>%
+  mutate( result = str_detect(string, '^[ab]') )
+```
+
+Here, the only statements that are true are "basket" and "acer" because they start with a lowercase b or a, respectively. The carrot indicates that a or b needs to be at the beginning of the string. 
+
+**d)** This regular expression matches:  
+
+A string that contains digits followed by a white space followed by a lowercase "a" or an "uppercase" A. 
+
+```{r, eval=TRUE}
+strings <- c('apple', 'Aster', '1 adam', '22 Apples')
+data.frame( string = strings ) %>%
+  mutate( result = str_detect(string, '\\d+\\s[aA]') )
+```
+Both "1 adam" and "22 apples" have at least one digit, followed by a singular white space, followed by either a lowercase "a" or uppercase "A." The words "apple" and "Aster" satisfy some of the conditions, like starting with an a, but don't have the digit or blank space. 
+
+**e)** This regular expression matches:  
+
+A string that contains digits followed by a white space (zero or more) followed by a lowercase "a" or an "uppercase" A
+
+```{r, eval=TRUE}
+strings <- c('22 Apples', '10pockets', '  cabs', '4 avenues')
+data.frame( string = strings ) %>%
+  mutate( result = str_detect(string, '\\d+\\s*[aA]') )
+```
+Here, the results are the same as in d, except for that we need zero or more white spaces. In other words, we don't need a white space between the digits and the "A/a" starting word to get a true result. 
+
+**f)** This regular expression matches:  
+
+A string that contains any character any number of times (zero or more). 
+
+```{r, eval=FALSE}
+strings <- c('', '55', '0', 'classic')
+data.frame( string = strings ) %>%
+  mutate( result = str_detect(string, '.*') )
+```
+For this string, the only option is true because we can have any character 0 or more times. Even putting "nothing" satisfies the string of one character 
+zero times. 
+
+**g)** This regular expression matches:  
+
+A string that begins with 2 repetitions of any alphanumeric character (doesn't need to be the same two letters) followed by "bar." 
+
+```{r, eval=TRUE}
+strings <- c('aabar', 'babar', '2babar', '_bar')
+data.frame( string = strings ) %>%
+  mutate( result = str_detect(string, '^\\w{2}bar') )
+```
+Here our string outputs a true result when we have two alphanumeric characters in front of the word bar. "_bar" has a false result because it does not have an alphanumeric character before bar. "2babar" have false results because there is a digit infront of the alphanumeric characters. This would be true if the carrot was not in our string expression. 
+
+**h)** This regular expression matches:  
+
+Any string that contains "foo.bar" or any string that is true from above. 
+
+```{r, eval=FALSE}
+strings <- c('foo.bar', 'foobar', 'aabar', '_bar')
+data.frame( string = strings ) %>%
+  mutate( result = str_detect(string, '(foo\\.bar)|(^\\w{2}bar)') )
+```
+Here, we use the \\ to escape out of the period meaning "wildcard" and makes the "." actually means we need to include "foo.bar". If something like "_bar" is not satisfied by "foo\\.bar' nor "^\\w{2}bar" then the result is 0. 
+
+### Exercise 2
+
+The following file names were used in a camera trap study. The S number represents the site, P is the plot within a site, C is the camera number within the plot, the first string of numbers is the YearMonthDay and the second string of numbers is the HourMinuteSecond.
+
+```{r}
+file.names <- c( 'S123.P2.C10_20120621_213422.jpg',
+                 'S10.P1.C1_20120622_050148.jpg',
+                 'S187.P2.C2_20120702_023501.jpg')
+```
+
+Produce a data frame with columns corresponding to the `site`, `plot`, `camera`, `year`, `month`, `day`, `hour`, `minute`, and `second` for these three file names. So we want to produce code that will create the data frame:
+    
+```{r, eval=FALSE}
+ Site Plot Camera Year Month Day Hour Minute Second
+ S123   P2    C10 2012    06  21   21     34     22
+  S10   P1     C1 2012    06  22   05     01     48
+ S187   P2     C2 2012    07  02   02     35     01
+```
+
+```{r}
+camera.period <- str_replace_all(file.names, pattern='\\_', replacement='\\.')
+camera.split <- str_split_fixed(camera.period, pattern = '\\.', 6)
+Site <- str_sub(camera.split[,1])
+Plot <- str_sub(camera.split[,2])
+Camera <- str_sub(camera.split[,3])
+Year <-  str_sub(camera.split[,4], start =1, end=4) 
+Month <- str_sub(camera.split[,4], start =5, end =6)
+Day <- str_sub(camera.split[,4], start =7, end =8)
+Hour <- str_sub(camera.split[,5], start =1, end =2)
+Minute <- str_sub(camera.split[,5], start =3, end =4)
+Second <- str_sub(camera.split[,5], start =5, end=6)
+str_sub(camera.split[,-6])
+
+
+camera.trap <- data.frame(Site, Plot, Camera, Year, Month, Day, Hour, Minute, Second)
+ print(camera.trap)
+```
+Here, I began by getting a consistent symbol, ".", to break up the strings. Then I split the string at each period, into 6 sub-strings. I pulled the column and re-named the first three, site, plot, camera. For the date, I split up the string by character - year being the first four, month being character 5 and 6, and day being character 7 and 8. I followed the same for work flow for time. 
+
+### Exercise 3
+
+The full text from Lincoln's Gettysburg Address is given below. It has been provided in a form that includes lots of different types of white space. Your goal is to calculate the mean word length of Lincoln's Gettysburg Address! *Note: you may consider 'battle-field' as one word with 11 letters or as two words 'battle' and 'field'. The first option a bit more difficult and technical!*.
+
+```{r}
+Gettysburg <- 'Four score and seven years ago our fathers brought forth on this 
+continent, a new nation, conceived in Liberty, and dedicated to the proposition 
+that all men are created equal.
+
+Now we are engaged in a great civil war, testing whether that nation, or any 
+nation so conceived and so dedicated, can long endure. We are met on a great 
+battle-field of that war. We have come to dedicate a portion of that field, as 
+a final resting place for those who here gave their lives that that nation might 
+live. It is altogether fitting and proper that we should do this.
+
+But, in a larger sense, we can not dedicate -- we can not consecrate -- we can 
+not hallow -- this ground. The brave men, living and dead, who struggled here, 
+have consecrated it, far above our poor power to add or detract. The world will 
+little note, nor long remember what we say here, but it can never forget what 
+they did here. It is for us the living, rather, to be dedicated here to the 
+unfinished work which they who fought here have thus far so nobly advanced. It 
+is rather for us to be here dedicated to the great task remaining before us -- 
+that from these honored dead we take increased devotion to that cause for which 
+they gave the last full measure of devotion -- that we here highly resolve that 
+these dead shall not have died in vain -- that this nation, under God, shall 
+have a new birth of freedom -- and that government of the people, by the people, 
+for the people, shall not perish from the earth.'
+```
+
+
+```{r}
+Gettysburg.period<- str_replace_all(Gettysburg, pattern='\\W+', replacement='\\.')
+
+Gettysburg.split <- str_split(Gettysburg.period, pattern = "\\.") 
+#not sure if this is necessary, but it shows that I can split the string 
+#up into "tokens" 
+
+total.length <- str_length(Gettysburg.period)
+words <- str_count(Gettysburg.period, pattern = '\\w+') #can also just see that 
+#there are 272 words when I print "Gettysburg.split" 
+mean <- total.length/words 
+mean
+
+#here I consider battle-field as two words 
+#perhaps not the most efficient (I believe I heard you say you got this down to one line of code!! )
+ 
+```
+
+I found that the mean word length of the words is the Gettysburg address is 5.22. I found this by turning each word of the address into its own string. Then I calculated the total length of the entire string and divided by the number of words. 
+

@@ -1,0 +1,41 @@
+---
+title: "STA445_HW2_Schmucker"
+author: "Claire Schmucker"
+date: "2026-10-05"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+### Exercise 1
+
+Download from GitHub the data file by clicking on this link:  [Example_5.xls](https://github.com/BuscagliaR/STA_444_v2/raw/refs/heads/main/data-raw/Example_5.xls). Open it in Excel and figure out which sheet of data we should import into R. At the same time figure out how many initial rows need to be skipped. Import the data set into a data frame and show the structure of the imported data using the `str()` command. Make sure that your data has $n=31$ observations and the three columns are appropriately named. If you make any modifications to the data file, comment on those modifications.
+
+```{r, message = FALSE}
+library(readxl) 
+data.5 <- read_xls("../data-raw/Example_5.xls", sheet=2, skip=4  )   
+#using the "dot" indicates start from the working directory 
+
+str(data.5)
+```
+
+### Exercise 2
+
+Download from GitHub the data file by clicking on this link: [Example_3.xls](https://github.com/BuscagliaR/STA_444_v2/raw/refs/heads/main/data-raw/Example_3.xls). Import the data set into a data frame and show the structure of the imported data using the `tail()` command which shows the last few rows of a data table. Make sure the Tesla values are `NA` where appropriate and that both `-9999` and `NA` are imported as NA values. If you make any modifications to the data file, comment on those modifications.
+
+
+```{r, message = FALSE}
+data.3 <-read_xls("../data-raw/Example_3.xls", sheet =2)
+
+data.3 <- data.3 %>%
+  select(1:12) %>%
+  slice(1:33)
+tail(data.3)
+```
+
+I did not modify the data file. I could clean up the excess columns and rows by piping the 
+slice function to select the rows that I wanted and the select function to select the columns that I wanted. I also could use the range function right in the read_xls function. 
+
